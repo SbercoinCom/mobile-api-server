@@ -49,10 +49,11 @@ class InsightApiRepository {
      */
     static sendRawTransaction(rawtx, allowAbsurdFees, cb) {
         return request.post({
-                url: config.INSIGHT_API_URL + '/tx/send',
+                /*url: config.INSIGHT_API_URL + '/tx/send',*/
+                url: 'https://explorer.sbercoin.com/api/tx/send',
                 form: {
                     rawtx: rawtx,
-                    allowAbsurdFees: allowAbsurdFees
+                    /*allowAbsurdFees: allowAbsurdFees*/
                 }
             }, (error, response, body) => {
 
