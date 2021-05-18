@@ -44,11 +44,11 @@ class OutputsControllers {
 
                 newAddresses.push({
                     address: address.address,
-                    tx_hash: address.txid,
-                    vout: address.vout,
+                    tx_hash: address.transactionId,
+                    vout: address.outputIndex,
                     txout_scriptPubKey: address.scriptPubKey,
-                    amount: address.amount,
-                    block_height: address.height ? address.height : -1,
+                    amount: address.value,
+                    block_height: address.blockHeight ? address.blockHeight : -1,
                     pubkey_hash: bytes.slice(1, 21).toString('hex'),
                     is_stake: address.isStake,
                     confirmations: address.confirmations
