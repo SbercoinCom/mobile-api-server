@@ -15,18 +15,18 @@ class HistoryService {
      */
     static formatHistory(history, next) {
 
-        if (!history || !history.items || !history.items.length) {
+        if (!history || !history.transactions || !history.transactions.length) {
             return next(null, {
                 totalItems: 0,
                 items: []
             });
         }
 
-        let items = new Array(history.items.length);
+        let items = new Array(history.transactions.length);
 
-        return async.each(history.items, (item, callback) => {
+        return async.each(history.transactions, (item, callback) => {
 
-            let idx = history.items.indexOf(item);
+            let idx = history.transactions.indexOf(item);
 
             return HistoryService.formatHistoryItem(item, (err, result) => {
 
@@ -37,7 +37,7 @@ class HistoryService {
 
         }, (err) => {
             return next(err, {
-                totalItems: history && history.totalItems ? history.totalItems : 0,
+                totalItems: history && history.totalCount ? history.totalcount : 0,
                 items: items
             });
         });

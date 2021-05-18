@@ -47,7 +47,7 @@ class OutputsControllers {
                     tx_hash: address.transactionId,
                     vout: address.outputIndex,
                     txout_scriptPubKey: address.scriptPubKey,
-                    amount: address.value,
+                    amount: address.value/1e7,
                     block_height: address.blockHeight ? address.blockHeight : -1,
                     pubkey_hash: bytes.slice(1, 21).toString('hex'),
                     is_stake: address.isStake,
