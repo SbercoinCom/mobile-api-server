@@ -1,6 +1,7 @@
 let BigNumber = require('bignumber.js');
 let ContractsHelper = require('../Helpers/ContractsHelper');
 let InsightApiRepository = require('../Repositories/InsightApiRepository');
+let TransactionService = require('./TransactionService');
 let async = require('async');
 
 class HistoryService {
@@ -27,8 +28,9 @@ class HistoryService {
         return async.each(history.transactions, (item, callback) => {
 
             let idx = history.transactions.indexOf(item);
+            let tx = await TransactionService.getTransaction(item.id, next);
 
-            return HistoryService.formatHistoryItem(item, (err, result) => {
+            return HistoryService.formatHistoryItem(tx, (err, result) => {
 
                 items[idx] = result;
 
