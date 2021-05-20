@@ -1,8 +1,8 @@
 let BigNumber = require('bignumber.js');
 let ContractsHelper = require('../Helpers/ContractsHelper');
 let InsightApiRepository = require('../Repositories/InsightApiRepository');
-let TransactionService = require('./TransactionService');
 let async = require('async');
+const logger = require('log4js').getLogger('History Service');
 
 class HistoryService {
 
@@ -26,22 +26,32 @@ class HistoryService {
         let items = new Array(history.transactions.length);
 
         return async.each(history.transactions, (item, callback) => {
-
             let idx = history.transactions.indexOf(item);
-            let tx = await TransactionService.getTransaction(item.id, next);
+            return InsightApiRepository.getTrx(item.id, (err, result) => {
+                return HistoryService.formatHistoryItem(result, (err, result) => {
 
-            return HistoryService.formatHistoryItem(tx, (err, result) => {
+                    items[idx] = result;
 
-                items[idx] = result;
+                    items[idx].amount /= 1e7;
 
-                return callback();
+                    items[idx].vin.forEach((input) => {
+                        input.value = parseInt(input.value)/1e7.toString();
+                    });
+
+                    items[idx].vout.forEach((output) => {
+                        output.value = parseInt(output.value)/1e7.toString();        
+                    });
+
+                    return callback();
+                });
             });
-
-        }, (err) => {
+            
+        },  
+        (err) => {
             return next(err, {
                 totalItems: history && history.totalCount ? history.totalcount : 0,
                 items: items
-            });
+            })
         });
 
 
