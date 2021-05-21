@@ -240,7 +240,7 @@ class InsightApiRepository {
     static getTransactionReceipt(txHash, cb) {
 
         return request.get({
-            url: config.EXPLORER_API_URL + `/tx/${txHash}`,
+            url: config.EXPLORER_API_URL + `/tx/${txHash}/receipt`,
             json: true
         }, (error, response, body) => {
 
