@@ -101,7 +101,7 @@ class InsightApiRepository {
      */
     static getAddressesHistory(addresses, options, cb) {
         return request.get({
-            url: config.EXPLORER_API_URL + `/address/${addresses.join(',')}/basic-txs`,
+            url: config.EXPLORER_API_URL + `/address/${addresses.join(',')}/basic-txs?limit=${options.to}&offset=${options.from}`,
             json: true
         }, (error, response, body) => {
 
