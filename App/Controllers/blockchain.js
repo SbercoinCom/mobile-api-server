@@ -12,13 +12,13 @@ class BlockchainController {
 
 	getInfo(cb) {
         return InsightApiRepository.getInfo((error, body) => {
-            cb(error, body && body.info ? body.info : {});
+            cb(error, body ? body : {});
 		});
 	}
 
     getFeePerKb(cb, data) {
 
-        let req = data.req,
+        /*let req = data.req,
             nBlocks = parseInt(req.query.nBlocks);
 
         if (_.isNaN(nBlocks)) {
@@ -34,9 +34,12 @@ class BlockchainController {
             if (body && body.fee_per_kb < 0.004) {
                 body.fee_per_kb = 0.006;
             }
+		});*/
+        error = null;
+        body = {};
+        body.fee_per_kb = 0.0001;
 
-            return cb(error, body);
-		});
+        return cb(error, body);
 	}
 
     fetchDgpInfo(cb) {

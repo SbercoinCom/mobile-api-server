@@ -12,7 +12,7 @@ class InsightApiRepository {
      */
     static getInfo(cb) {
         return request.get({
-            url: config.INSIGHT_API_URL + '/status?q=getInfo',
+            url: config.EXPLORER_API_URL + '/info',
             json: true
         }, (error, response, body) => {
                 return cb(error, body);
@@ -27,7 +27,7 @@ class InsightApiRepository {
      */
     static getTrx(txid, cb) {
         return request.get({
-            url: config.INSIGHT_API_URL + `/tx/${txid}`,
+            url: config.EXPLORER_API_URL + `/tx/${txid}`,
             json: true
         }, (error, response, body) => {
 
@@ -49,8 +49,7 @@ class InsightApiRepository {
      */
     static sendRawTransaction(rawtx, allowAbsurdFees, cb) {
         return request.post({
-                /*url: config.INSIGHT_API_URL + '/tx/send',*/
-                url: 'https://explorer.sbercoin.com/api/tx/send',
+                url: config.EXPLORER_API_URL + '/tx/send',
                 form: {
                     rawtx: rawtx,
                     /*allowAbsurdFees: allowAbsurdFees*/
@@ -84,7 +83,7 @@ class InsightApiRepository {
      */
     static getUnspentAddresses(addresses, cb) {
         return request.get({
-            url: config.INSIGHT_API_URL + `/addrs/${addresses.join(',')}/utxo`,
+            url: config.EXPLORER_API_URL + `/address/${addresses.join(',')}/utxo`,
             json: true
         }, (error, response, body) => {
                return cb(error, body);
@@ -102,7 +101,7 @@ class InsightApiRepository {
      */
     static getAddressesHistory(addresses, options, cb) {
         return request.get({
-            url: config.INSIGHT_API_URL + `/addrs/${addresses.join(',')}/txs?from=${options.from}&to=${options.to}`,
+            url: config.EXPLORER_API_URL + `/address/${addresses.join(',')}/basic-txs`,
             json: true
         }, (error, response, body) => {
 
@@ -122,7 +121,7 @@ class InsightApiRepository {
      */
     static getAddressesBalance(addresses, cb) {
         return request.get({
-            url: config.INSIGHT_API_URL + `/addrs/${addresses.join(',')}/balance`,
+            url: config.EXPLORER_API_URL + `/address/${addresses.join(',')}/balance`,
             json: true
         }, (error, response, body) => {
             return cb(error, body);
@@ -140,7 +139,7 @@ class InsightApiRepository {
     static callContract(address, hash, from, cb) {
 
         return request.get({
-            url: config.INSIGHT_API_URL + `/contracts/${address}/hash/${hash}/call` + (from ? ('?from=' + from) : ''),
+            url: config.EXPLORER_API_URL + `/contract/${address}/call?data=${hash}` + (from ? ('?sender=' + from) : ''),
             json: true
         }, (error, response, body) => {
 
@@ -159,7 +158,7 @@ class InsightApiRepository {
      * @param {Function} cb
      * @returns {*}
      */
-    static minEstimateFee(nBlocks, cb) {
+    /*static minEstimateFee(nBlocks, cb) {
 
         return request.get({
             url: config.INSIGHT_API_URL + `/utils/minestimatefee?nBlocks=${nBlocks}`,
@@ -178,7 +177,7 @@ class InsightApiRepository {
             return cb(error, body);
 
         });
-    }
+    }*/
 
     /**
      *
@@ -189,7 +188,7 @@ class InsightApiRepository {
     static getAccountInfo(address, cb) {
 
         return request.get({
-            url: config.INSIGHT_API_URL + `/contracts/${address}/info`,
+            url: config.EXPLORER_API_URL + `/contract/${address}`,
             json: true
         }, (error, response, body) => {
 
@@ -214,7 +213,7 @@ class InsightApiRepository {
     static getDgpinfo(cb) {
 
         return request.get({
-            url: config.INSIGHT_API_URL + `/dgpinfo`,
+            url: config.EXPLORER_API_URL + `/info`,
             json: true
         }, (error, response, body) => {
 
@@ -227,7 +226,7 @@ class InsightApiRepository {
                 return cb('Not Found')
             }
 
-            return cb(error, body);
+            return cb(error, body.dgpInfo);
 
         });
     }
@@ -241,7 +240,7 @@ class InsightApiRepository {
     static getTransactionReceipt(txHash, cb) {
 
         return request.get({
-            url: config.INSIGHT_API_URL + `/txs/${txHash}/receipt`,
+            url: config.EXPLORER_API_URL + `/tx/${txHash}/receipt`,
             json: true
         }, (error, response, body) => {
 
@@ -264,7 +263,7 @@ class InsightApiRepository {
         let queryParamsString = queryString.stringify(options, {arrayFormat: 'bracket'});
 
         return request.get({
-            url: config.INSIGHT_API_URL + `/erc20/${contractAddress}/transfers` + (queryParamsString ? ('?' + queryParamsString) : ''),
+            url: config.EXPLORER_API_URL + `/qrc20/${contractAddress}/txs` + (queryParamsString ? ('?' + queryParamsString) : ''),
             json: true
         }, (error, response, body) => {
 

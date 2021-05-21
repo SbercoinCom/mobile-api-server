@@ -1,6 +1,7 @@
 let BigNumber = require('bignumber.js');
 let ContractsHelper = require('../Helpers/ContractsHelper');
 let InsightApiRepository = require('../Repositories/InsightApiRepository');
+let TransactionService = require('./TransactionService');
 let async = require('async');
 
 class HistoryService {
@@ -15,20 +16,21 @@ class HistoryService {
      */
     static formatHistory(history, next) {
 
-        if (!history || !history.items || !history.items.length) {
+        if (!history || !history.transactions || !history.transactions.length) {
             return next(null, {
                 totalItems: 0,
                 items: []
             });
         }
 
-        let items = new Array(history.items.length);
+        let items = new Array(history.transactions.length);
 
-        return async.each(history.items, (item, callback) => {
+        return async.each(history.transactions, (item, callback) => {
 
-            let idx = history.items.indexOf(item);
+            let idx = history.transactions.indexOf(item);
+            let tx = await TransactionService.getTransaction(item.id, next);
 
-            return HistoryService.formatHistoryItem(item, (err, result) => {
+            return HistoryService.formatHistoryItem(tx, (err, result) => {
 
                 items[idx] = result;
 
@@ -37,7 +39,7 @@ class HistoryService {
 
         }, (err) => {
             return next(err, {
-                totalItems: history && history.totalItems ? history.totalItems : 0,
+                totalItems: history && history.totalCount ? history.totalcount : 0,
                 items: items
             });
         });
@@ -57,16 +59,16 @@ class HistoryService {
             addressCallString = null,
             addressCreateString = null;
 
-        if (item.vin) {
-            item.vin.forEach((vIn) => {
+        if (item.inputs) {
+            item.inputs.forEach((input) => {
 
-                if (vIn.addr) {
+                if (input.address) {
 
-                    let num = new BigNumber(vIn.value);
+                    let num = new BigNumber(input.value);
 
                     vin.push({
                         value: num.toString(10),
-                        address: vIn.addr
+                        address: input.address
                     });
 
                 }
@@ -74,31 +76,31 @@ class HistoryService {
             });
         }
 
-        if (item.vout) {
+        if (item.outputs) {
 
-            item.vout.forEach((vOut) => {
+            item.outputs.forEach((output) => {
 
-                if (vOut.scriptPubKey) {
+                if (output.scriptPubKey) {
 
                     try {
-                        if (ContractsHelper.isContractCreateVOutHex(vOut.scriptPubKey.hex)) {
-                            addressCreateString = ContractsHelper.getContractAddress(item.txid, vOut.n);
+                        if (ContractsHelper.isContractCreateVOutHex(output.scriptPubKey.hex)) {
+                            addressCreateString = ContractsHelper.getContractAddress(item.id, output.n);
                         }
                     } catch (e) {}
 
                     try {
-                        if (!addressCreateString && ContractsHelper.isContractCallVOutHex(vOut.scriptPubKey.hex)) {
-                            addressCallString = ContractsHelper.getCallContractAddressFromVOutHex(vOut.scriptPubKey.hex);
+                        if (!addressCreateString && ContractsHelper.isContractCallVOutHex(output.scriptPubKey.hex)) {
+                            addressCallString = ContractsHelper.getCallContractAddressFromVOutHex(output.scriptPubKey.hex);
                         }
                     } catch (e) {}
 
-                    if (vOut.scriptPubKey.addresses && vOut.scriptPubKey.addresses.length && typeof vOut.value !== 'undefined') {
+                    if (output.address && typeof output.value !== 'undefined') {
 
-                        let num = new BigNumber(vOut.value);
+                        let num = new BigNumber(output.value);
 
                         vout.push({
                             value: num.toString(10),
-                            address: vOut.scriptPubKey.addresses[0] ? vOut.scriptPubKey.addresses[0] : null
+                            address: output.address ? output.address : null
                         });
 
                     }
@@ -110,11 +112,11 @@ class HistoryService {
         }
 
         let result = {
-            block_time: item.blocktime ? item.blocktime : null,
-            block_height: item.blockheight ? item.blockheight : -1,
-            block_hash: item.blockhash ? item.blockhash : null,
-            tx_hash: item.txid,
-            amount: item.valueIn,
+            block_time: item.timestamp ? item.timestamp : null,
+            block_height: item.blockHeight ? item.blockHeight : -1,
+            block_hash: item.blockHash ? item.blockHash : null,
+            tx_hash: item.id,
+            amount: item.inputValue,
             vout: vout,
             vin: vin
         };

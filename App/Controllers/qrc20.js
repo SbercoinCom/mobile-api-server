@@ -53,9 +53,9 @@ class Qrc20Controller {
                         from: item.from,
                         to: item.to,
                         amount: item.value,
-                        tx_hash: item.tx_hash,
-                        tx_time: item.tx_time,
-                        contract_address: item.contract_address
+                        tx_hash: item.transactionId,
+                        tx_time: item.timestamp,
+                        contract_address: contractAddress
                     };
                 });
 
