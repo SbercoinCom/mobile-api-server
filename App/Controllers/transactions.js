@@ -43,7 +43,7 @@ class TransactionsController {
         }
 
         return InsightApiRepository.getTransactionReceipt(data.req.params.txhash, (error, body) => {
-            return  body.outputs[0].receipt ? cb(error, body.outputs[0].receipt) : cb(error, body);
+            cb(error, body);
         });
 
     }
